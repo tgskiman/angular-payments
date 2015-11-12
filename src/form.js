@@ -48,7 +48,7 @@ angular.module('angularPayments')
       var form = angular.element(elem);
 
       form.bind('submit', function () {
-          if (scope.payment.type == "check") {
+          if (scope.payment.paymentType == "check") {
               return;
           }
 
@@ -64,11 +64,15 @@ angular.module('angularPayments')
         var button = form.find('button');
         button.prop('disabled', true);
 
-        if(form.hasClass('ng-valid')) {
+        
+
+        if (form.hasClass('ng-valid')) {
+
             $window.Stripe.createToken(_getDataToSend(scope.payment), function (status, response) {
                 if (response.error) {
                     scope.payment.errorText = response.error.message;
                     button.prop('disabled', false);
+
                 }
                 else {
                     scope.payment.card.number = null;
@@ -76,14 +80,15 @@ angular.module('angularPayments')
                     scope.payment.card.expiry = null;
                     scope.payment.card.expMonth = null;
                     scope.payment.card.expYear = null;
-                    scope.payment.token = response.id;
+                    scope.payment.card.stripeToken = response.id;
+                    button.prop('disabled', false);
                     scope.paymentSuccess();
                 }
 
           });
 
         } else {
-          button.prop('disabled', false);
+            button.prop('disabled', false);
         }
 
         scope.payment.card.expMonth = null;
